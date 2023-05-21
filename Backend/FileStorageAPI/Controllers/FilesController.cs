@@ -55,7 +55,7 @@ namespace ForumAPI.Controllers
             }
         }
         
-        [HttpGet("{fileId}"), Authorize]
+        [HttpGet("{fileId}")]
         public async Task<ActionResult<FileMetadataDTOBase>> GetFile(string fileId)
         {
             try
