@@ -1,0 +1,14 @@
+<mat-card>
+  <div class="flex w-full">
+    <div>
+      <mat-checkbox 
+      [(ngModel)]="allChecked"
+      [disableRipple]="false"
+      (change)="onCheckBoxClick()" [color]="'primary'"></mat-checkbox>
+    </div>
+
+    <button (click)="onDownloadFiles()" mat-raised-button color="primary">Завантажити</button>
+    <button *ngIf="showDeleteButton" (click)="onDeleteClick()" class="ml-2" mat-raised-button color="warn">Видалити</button>
+  
+  </div>
+</mat-card>

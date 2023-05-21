@@ -1,0 +1,60 @@
+<div>
+  <form [formGroup]="registerForm" (ngSubmit)="proceedRegistration()">
+      <div class="flex flex-col">
+          <div 
+            *ngIf="userName?.hasError('required') &&
+            submitPressed || 
+            userName?.touched &&
+            userName?.hasError('required')"
+            class="error-text text-base">
+              Логін обов'язковий
+          </div>
+          <mat-form-field appearance="outline">
+              <mat-label>Логін</mat-label>
+              <input matInput formControlName="userName">
+          </mat-form-field>
+          <div 
+            *ngIf="password?.invalid &&
+            (password?.dirty || password?.touched) ||
+            password?.invalid && submitPressed"
+            class="mb-2">
+              <div class="error-text text-base">Пароль має містити:</div>
+              <div *ngIf="password?.errors?.['required'] || password?.hasError('minlength')">
+                <div class="error-text text-sm">хочаб 5 символів</div>
+              </div>
+              <div class="error-text text-sm" *ngIf="password?.hasError('passwordStrength')">
+                  <div>хочаб по 1 символу нижнього та верхнього регістру</div>
+                  <div>хочаб 1 цифру</div>
+              </div>
+          </div>
+          <mat-form-field appearance="outline">
+              <mat-label>Пароль*</mat-label>
+              <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+          </mat-form-field>
+          
+          <div *ngIf="confirmPassword?.touched && registerForm.hasError('passwordMathError')" class="error-text mb-1 text-base">
+              Паролі не співпадають!
+          </div>
+          <mat-form-field appearance="outline">
+          <mat-label>Повіторіть пароль</mat-label>
+              <input matInput formControlName="confirmPassword" type="password">
+          </mat-form-field>
+          <div class="flex">
+              <button 
+                (click)="submitPressed = true" 
+                type="submit" 
+                mat-raised-button color="primary">Реєстрація
+              </button>
+              <button 
+                mat-raised-button 
+                type="button" 
+                routerLink="/login" 
+                class="ml-3">Увійти
+              </button>            
+          </div>
+          <div *ngFor="let message of registerErrorMessages" class="error-text text-base mt-3">
+              {{ message }}!
+          </div>
+      </div>
+  </form>
+</div>

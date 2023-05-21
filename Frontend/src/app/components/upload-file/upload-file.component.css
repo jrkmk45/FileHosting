@@ -1,0 +1,58 @@
+.remove-button{
+  height: 22px;
+}
+.upload-container {
+  flex-grow: 1;
+  flex-basis: 0;
+  border: 9px dashed #3e52b5a1;
+  display: flex;
+  width: 100%;
+  min-height: 150px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+.upload-list-container {
+  flex-basis: 48%;
+}
+
+.upload-container div {
+  font-size: 23px;
+  color: #3e52b5;
+
+}
+
+.upload-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.upload-button:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.upload-icon {
+  
+  color: #3e52b5d2;
+  font-size: 50px;
+  height: 50px ;
+  width: 50px;
+}
+
+.file-input {
+  display: none;
+}
+
+.main-container {
+  display: flex;
+}
+
+@media screen and (max-width: 700px) {
+ .main-container  {
+  flex-direction: column;
+ }
+}

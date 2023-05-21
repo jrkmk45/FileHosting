@@ -1,0 +1,7 @@
+::ng-deep .mdc-notched-outline__notch {
+  border-right: none !important;
+}
+
+.mat-radio-ripple {
+  display: none;
+}

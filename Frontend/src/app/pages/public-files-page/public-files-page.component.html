@@ -1,0 +1,15 @@
+<mat-card class="mt-4 p-5">
+  <h2>Публічні файли</h2>
+  <div class="flex items-center w-full">
+    <mat-form-field class="w-full" appearance="outline">
+      <mat-label>Пошук</mat-label>
+        <input
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onInputChange($event)" 
+          matInput>
+    </mat-form-field>
+  </div>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <app-control-bar [files]="files" [showDeleteButton]="false"></app-control-bar>
+  <app-file-list [files]="files"></app-file-list>
+</mat-card>

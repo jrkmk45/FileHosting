@@ -1,0 +1,31 @@
+<div class="w-full">
+  <div *ngFor="let uploadingFile of uploadingFiles; let i = index" class="w-full">
+    <div class="flex flex-row mt-1 w-full justify-center align-center">
+      <div class="file-icon-container">
+        <app-file-icon 
+          [extension]="'.'+uploadingFile.file.name.split('.').pop()" 
+          [showExtension]="false"></app-file-icon>
+      </div>
+      <div class="flex flex-col w-full ml-2">
+        <div class="flex justify-between">
+          <div class="flex text-base"><p>{{ uploadingFile.file.name }}</p></div>
+          <div (click)="onRemoveFileClick(i)"><mat-icon>clear</mat-icon></div>
+        </div>
+        <div class="w-full">
+          <mat-progress-bar class="w-full" mode="determinate" value="{{uploadingFile.progress}}"></mat-progress-bar>
+        </div>
+        <div>
+          <div class="flex mt-1">
+          <div class="">Приватний</div>
+          <mat-checkbox 
+            (change)="onPrivateFileCheckBoxClick(i)" 
+            [color]="'primary'">
+          </mat-checkbox>
+          </div>
+        </div>
+      </div>
+      <div>{{formatHelper.convertBytesToString(uploadingFile.file.size)}}</div>
+    </div>
+  </div>
+</div>
+  

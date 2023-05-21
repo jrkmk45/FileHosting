@@ -1,0 +1,37 @@
+<div 
+  [style.background-color]="file!.checked ? 'rgb(62, 82, 181, 0.4)' : 'rgb(234, 234, 234)'" 
+  class="container">
+  <div class="image-container">
+    <app-file-icon [extension]="file!.extension"></app-file-icon>
+  </div>
+
+  <div class="flex flex-col">
+    <div class="file-title-container">
+      <div>
+        <mat-checkbox 
+        [(ngModel)]="file!.checked"
+        [disableRipple]="true"
+        (change)="onCheckBoxClick()" [color]="'primary'"></mat-checkbox>
+      </div>
+      <div class="file-title-text"
+        (mouseenter)="showTitlePopup($event)"
+        (mouseleave)="showFullTitlePopup=false">
+        {{file?.fullName}}
+      </div>
+    </div>
+
+    <div class="flex justify-between align-center">
+      <div>{{formatHelper.convertBytesToString(this.file!.size)}}</div>
+      <a [routerLink]="['/files', file!.id]"><div class="icon-container">
+        <mat-icon>more_vert</mat-icon>
+      </div></a>
+
+    </div>
+  </div>
+
+  <div 
+    *ngIf="showFullTitlePopup" 
+    [style.top.px]="pupupTopPosition"
+    class="popup-full-title">{{file!.fullName}}
+  </div>
+</div>

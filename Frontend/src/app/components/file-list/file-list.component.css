@@ -1,0 +1,41 @@
+.container {
+  height: 80vh;
+  overflow-y:auto;
+} 
+
+.list-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.file-card {
+  margin: 0.5%;
+  width: calc(calc(100% - 7%)/7);
+
+}
+
+@media only screen and (max-width: 1281px) {
+  .file-card {
+    width: calc(calc(100% - 5%)/5);
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .file-card {
+    width: calc(calc(100% - 4%)/4);
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .file-card {
+    width: calc(calc(100% - 3%)/3);
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  .file-card {
+    width: calc(calc(100% - 2%)/2);
+  }
+}

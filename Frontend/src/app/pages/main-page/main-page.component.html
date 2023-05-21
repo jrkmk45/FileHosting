@@ -1,0 +1,11 @@
+<div class="mt-5"></div>
+<div class="flex flex-col">
+
+<app-upload-file (fileUploaded)="onFileUploaded($event)"></app-upload-file>
+<div *ngIf="isLoading">Завантаження...</div>
+<div class="mt-3">
+<app-control-bar 
+  (filesDeleted)="onFilesDeleted($event)"
+  [files]="files"></app-control-bar>
+
+<app-file-list [files]="files"></app-file-list>

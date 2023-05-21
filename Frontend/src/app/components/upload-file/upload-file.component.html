@@ -1,0 +1,29 @@
+<mat-card>
+  <div class="main-container">
+    <div *ngIf="selectedFiles.length>0" class="upload-list-container">
+      <app-uploading-files-list [uploadingFiles]="selectedFiles"></app-uploading-files-list>
+    </div>
+    <div 
+      (drop)="onFilesDrop($event)"
+      (dragover)="onDragOver($event)"
+      class="upload-container">
+      <div
+      class="upload-button gap-1.5"
+      (click)="onBrowseFilesClick()">
+        <div class="upload-button">Завантажте файли</div>
+        <div><mat-icon class="upload-icon">cloud_upload</mat-icon></div>
+      </div>
+    </div>
+  </div>
+  </mat-card>
+  
+  <div *ngIf="selectedFiles.length > 0" class="flex mt-1">
+    <div>
+      <button (click)="onUploadFiles()" mat-raised-button color="primary">Завантажити</button>
+    </div>
+    <div>
+      <button (click)="onCancelAllClick()" class="ml-2" mat-raised-button color="warn">Скасувати</button>
+    </div>
+  </div>
+  
+  <input class="hidden" type="file" id="file-input" (change)="onFileSelect($event)" multiple/>

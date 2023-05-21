@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 9px;
+  width: 100%;
+}
+
+mat-checkbox {
+
+  transform: scale(0.9);
+  margin: -8px;
+}
+
+.mat-radio-container:hover .mat-radio-persistent-ripple {
+  opacity: 0 !important;
+}
+
+mat-icon {
+  margin-right: -6px;
+}
+
+.image-container {
+  width: 100%;
+  height: auto;
+}
+
+.file-title-container {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.file-title-text  {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-full-title  {
+  position: fixed;
+  z-index: 9999;
+  background-color: rgb(65, 65, 65);
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.hover-container {
+  position: relative;
+}

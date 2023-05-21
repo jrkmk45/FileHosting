@@ -1,0 +1,47 @@
+<div>
+  <form [formGroup]="loginForm" (ngSubmit)="proceedLogin()">
+    <div class="flex flex-col">
+      <div
+        *ngIf="userName?.hasError('required') &&
+          submitPressed ||
+          userName?.touched &&
+           userName?.hasError('required')"
+        class="error-text text-base mb-1">
+        User name required
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>User name</mat-label>
+        <input matInput formControlName="userName">
+      </mat-form-field>
+
+      <mat-error class="error-text text-base mb-1"
+        *ngIf="password?.hasError('required') &&
+          submitPressed ||
+           password?.touched &&
+           (password?.hasError('required') 
+           || password?.hasError('minlength'))">
+          There should be at least 5 characters
+      </mat-error>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password*</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+
+        <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide">
+          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </mat-form-field>
+      
+      <div class="flex">
+        <button (click)="submitPressed = true" type="submit" class="w-20" mat-raised-button
+          color="primary">Увійти</button>
+        <button mat-raised-button type="button" routerLink="/register" class="ml-3">Новий користувач?</button>
+      </div>
+      <div *ngIf="loginErrorMessage" class="error-text text-base mt-3">
+        {{ loginErrorMessage }}!
+      </div>
+    </div>
+  </form>
+</div>
