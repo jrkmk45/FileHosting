@@ -82,7 +82,7 @@ builder.Services.AddAuthentication(auth =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
     };
 });
-
+Console.WriteLine(Environment.GetEnvironmentVariable("JWT_KEY"));
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FileStorageAPI", Version = "v1" });
