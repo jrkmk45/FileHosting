@@ -128,8 +128,7 @@ namespace Services.Services.Implementations
                             await section.Body.CopyToAsync(targetStream);
                         }
 
-                        //    var fileName = System.Net.WebUtility.HtmlEncode(contentDisposition.FileName.Value);
-                        var fileName = contentDisposition.FileName.Value;
+                        var fileName = System.Net.WebUtility.HtmlEncode(contentDisposition.FileName.Value);
 
                         var idGenerationOptions = new GenerationOptions(length: 9);
                         fileId = ShortId.Generate(idGenerationOptions);
