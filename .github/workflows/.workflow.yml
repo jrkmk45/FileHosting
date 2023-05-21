@@ -27,5 +27,5 @@ jobs:
       run: dotnet publish -c Release /actions-runner/_work/FileStorage/FileStorage/Backend/
       
     - name: Run
-      working-directory: "/actions-runner/_work/Filestorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish"
+      working-directory: "/actions-runner/_work/Filestorage/FileStorage/FileStorageAPI/Backend/bin/Release/net6.0/publish"
       run: sudo dotnet "FileStorageAPI.dll" &
