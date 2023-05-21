@@ -119,11 +119,14 @@ namespace Services.Services.Implementations
                         var trustedFileNameForFileStorage = Path.GetRandomFileName();
 
                         var dirName = userId.ToString();
-                        if (!Directory.Exists("UserDirectories/" + dirName))
-                            Directory.CreateDirectory("UserDirectories/" + dirName);
+
+                        string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+                        if (!Directory.Exists("${FilePaths.UserDirectories}/" + dirName))
+                            Directory.CreateDirectory($"{FilePaths.UserDirectories}/" + dirName);
 
                         using (var targetStream = File.Create(
-                            Path.Combine($"UserDirectories/{dirName}", trustedFileNameForFileStorage)))
+                            Path.Combine($"{FilePaths.UserDirectories}/{dirName}", trustedFileNameForFileStorage)))
                         {
                             await section.Body.CopyToAsync(targetStream);
                         }
