@@ -24,7 +24,7 @@ jobs:
       working-directory: ./Backend
 
     - name: Publish
-      run: dotnet publish -c Release /actions-runner/_work/FileStorage/Backend/FileStorage/
+      run: dotnet publish -c Release /actions-runner/_work/FileStorage/Backend/
       
     - name: Run
       working-directory: "/actions-runner/_work/Filestorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish"
