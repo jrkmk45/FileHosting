@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:4200",
                 "http://www.contoso.com",
-                "http://webforumappbucket.s3-website.eu-central-1.amazonaws.com")
+                "http://filehosting-frontend.s3-website.eu-central-1.amazonaws.com")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
