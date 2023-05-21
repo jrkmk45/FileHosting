@@ -35,7 +35,8 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql("Server=my-apps-db.ccckezizvzsu.eu-central-1.rds.amazonaws.com;" +
+        $"Port=5432;Database=my-apps-db;UserId=postgres;Password={Environment.GetEnvironmentVariable("DB_PASSWORD")}; Include Error Detail=true;"));
 
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -78,7 +79,7 @@ builder.Services.AddAuthentication(auth =>
         ValidateAudience = false,
         RequireExpirationTime = true,
 
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
     };
 });
 
