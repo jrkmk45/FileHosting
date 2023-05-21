@@ -49,7 +49,7 @@ namespace ForumAPI.Controllers
                 var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 await _fileService.DeleteFilesAsync(fileIds, requesterId);
                 return NoContent();
-            } catch (ForbiddenResourceException ex)
+            } catch (ForbiddenResourceException)
             {
                 return Forbid();
             }
@@ -98,7 +98,7 @@ namespace ForumAPI.Controllers
 
                 var fileMetadata = await _fileService.GetFileMetadataAsync(fileId);
                 return File(fileStream, "application/octet-stream", fileMetadata.FullName);
-            } catch (ForbiddenResourceException ex)
+            } catch (ForbiddenResourceException)
             {
                 return Forbid();
             }

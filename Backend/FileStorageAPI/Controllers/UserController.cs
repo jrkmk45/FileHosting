@@ -98,12 +98,5 @@ namespace ForumAPI.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<UserDTO>>> GetUsers()
-        {
-            //     return Ok(await _userService.Get);
-            return null;
-        }
-
     }
 }
