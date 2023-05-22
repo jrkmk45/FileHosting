@@ -28,4 +28,7 @@ jobs:
       
     - name: Run
       working-directory: "/actions-runner/_work/FileStorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish"
+      env:
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        JWT_KEY: ${{ secrets.JWT_KEY }}
       run: sudo dotnet "FileStorageAPI.dll" &

@@ -69,7 +69,6 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
     MatCheckboxModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    FormsModule
   ],
   providers: [ 
     {
