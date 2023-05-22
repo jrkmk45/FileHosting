@@ -13,6 +13,7 @@ using Services.Services.Inerfaces;
 using Services.Services.Interfaces;
 using System.Text;
 using System.Text.Json.Serialization;
+using dotenv.net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +36,10 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql("Server=my-apps-db.ccckezizvzsu.eu-central-1.rds.amazonaws.com;" +
-    $"Port=5432;Database=my-apps-db;UserId=postgres;Password={Environment.GetEnvironmentVariable("DB_PASSWORD")}; Include Error Detail=true;"));
+DotEnv.Load();
+var enviroment = DotEnv.Read();
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(enviroment["DB_CONNECTION_STRING"]));
 
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -79,7 +82,7 @@ builder.Services.AddAuthentication(auth =>
         ValidateAudience = false,
         RequireExpirationTime = true,
 
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(enviroment["JWT_KEY"])),
     };
 });
 Console.WriteLine(Environment.GetEnvironmentVariable("JWT_KEY"));
