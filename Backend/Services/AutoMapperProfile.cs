@@ -12,7 +12,7 @@ namespace ForumAPI
         public AutoMapperProfile()
         {
             var Ip = IPGetter.GetPublicIPAsync().Result;
-            var ImagesUrl = $"{Ip}/{FilePaths.AvatarsPaths}";
+            var ImagesUrl = $"http://{Ip}/{FilePaths.AvatarsPaths}";
 
             CreateMap<RegisterUserDTO, User>();
 

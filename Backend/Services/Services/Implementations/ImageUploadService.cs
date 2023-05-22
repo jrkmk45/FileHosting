@@ -27,7 +27,7 @@ namespace Services.Services.Implementations
                 fileStream.Flush();
             }
             image.Dispose();
-            return path + filename + extension;
+            return filename + extension;
         }
 
         private async Task<Image> CropImageAsync(IFormFile file)
