@@ -30,6 +30,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PublicFilesPageComponent } from './pages/public-files-page/public-files-page.component';
 import { ControlBarComponent } from './components/control-bar/control-bar.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { ControlBarComponent } from './components/control-bar/control-bar.compon
     FileIconComponent,
     PublicFilesPageComponent,
     ControlBarComponent,
+    SearchBarComponent,
   ],
   imports: [
     BrowserModule,

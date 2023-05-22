@@ -27,10 +27,7 @@ export class MainPageComponent implements OnInit {
 
     if (userId == null) {
       if (this.authService.isUserLoggedIn()) {
-
         var userData = this.userService.getUserTokenData();
-      
-
       }
       else {
         this.isLoading = false;
@@ -56,5 +53,9 @@ export class MainPageComponent implements OnInit {
 
   onFilesDeleted(event : IFile[]) {
     this.files = this.files.filter(f => !event.includes(f));
+  }
+
+  onSearchPerformed(event : IFile[]) {
+    this.files = event;
   }
 }

@@ -1,0 +1,10 @@
+<mat-form-field 
+  class="w-full" 
+  appearance="outline"
+  subscriptSizing="dynamic">
+  <mat-label>Пошук</mat-label>
+    <input 
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onInputChange($event)" 
+      matInput>
+</mat-form-field>

@@ -29,23 +29,7 @@ export class PublicFilesPageComponent implements OnInit {
     })
   }
 
-  onInputChange(event : any) {
-    event = event.trim();
-    if (event == '') {
-      return;
-    }
-
-    this.isLoading = true;
-
-    this.filesService.searchFiles(event).subscribe({
-      next: (files) => {
-        this.files = files;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.snackbar.showMessage("Error occured while loading files");
-        this.isLoading = false;
-      }
-    })
+  onSearchPerformed(event: IFile[]) {
+    this.files = event;
   }
 }
