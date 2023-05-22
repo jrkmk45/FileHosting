@@ -13,6 +13,7 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using dotenv.net;
 
 namespace Services.Services.Implementations
 {
@@ -21,19 +22,16 @@ namespace Services.Services.Implementations
         private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
         private readonly IImageUploadService _imageUploadService;
 
         private const string InvalidCredentialsMessage = "Невалідні дані для логіну";
         private const string UnableToCreateUserMessage = "Реєстрація неможлива";
         public UserService(UserManager<User> userManager,
-            IConfiguration configuration,
             IMapper mapper,
             IUserRepository userRepository,
             IImageUploadService imageUploadService)
         {
             _userManager = userManager;
-            _configuration = configuration;
             _mapper = mapper;
             _userRepository = userRepository;
             _imageUploadService = imageUploadService;
@@ -70,15 +68,9 @@ namespace Services.Services.Implementations
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             };
 
-            // load users roles to token
-            var userRoles = await _userManager.GetRolesAsync(user);
-            foreach (var role in userRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            var enviroment = DotEnv.Read();
 
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(enviroment["JWT_KEY"]));
 
             var token = new JwtSecurityToken(
                 claims: claims,
