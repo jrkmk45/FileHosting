@@ -17,20 +17,35 @@ export class FileIconComponent {
 
 
   ngOnInit() {
+    let color;
     switch (this.extension) {
       case '.exe':
-        this.backgroundColorFilter = hexToCSSFilter('#0e63ab').filter;
+        color = '#0e63ab';
         break;
       case '.pptx':
-        this.backgroundColorFilter = hexToCSSFilter('#ac3a1f').filter;
+        color = '#ac3a1f';
         break;
       case '.docx':
-        this.backgroundColorFilter = hexToCSSFilter('#2980b9').filter;
+      case '.doc':
+        color = '#2980b9';
         break;
       case '.pdf':
-        this.backgroundColorFilter = hexToCSSFilter('#db1a1c').filter;
+        color = '#db1a1c';
         break;
+      case '.zip':
+      case '.rar':
+      case '.7z':
+        color = '#920159';
+        break;
+      case '.js':
+      case '.json':
+      case '.ts':
+        color = '#F0DB4F';
+        break;
+      default:
+        color = '#303030';
+
     }
-    this.backgroundColorFilter = this.backgroundColorFilter?.slice(0, -1);
+    this.backgroundColorFilter = hexToCSSFilter(color).filter.slice(0, -1);
   }
 } 
