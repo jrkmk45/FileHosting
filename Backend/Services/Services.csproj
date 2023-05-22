@@ -8,11 +8,8 @@
 
   <ItemGroup>
     <Compile Remove="ResponseCommentService\**" />
-    <Compile Remove="Utils\**" />
     <EmbeddedResource Remove="ResponseCommentService\**" />
-    <EmbeddedResource Remove="Utils\**" />
     <None Remove="ResponseCommentService\**" />
-    <None Remove="Utils\**" />
   </ItemGroup>
 
   <ItemGroup>

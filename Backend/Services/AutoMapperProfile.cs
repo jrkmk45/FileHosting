@@ -3,16 +3,17 @@ using Domain.Constants;
 using Domain.Models;
 using Services.Dtos.FileMetadata;
 using Services.Dtos.User;
+using Services.Utils;
 
 namespace ForumAPI
 {
     public class AutoMapperProfile : Profile
     {
-        private readonly string ImagesUrl = $"http://localhost/{FilePaths.AvatarsPaths}";
-
-
         public AutoMapperProfile()
         {
+            var Ip = IPGetter.GetPublicIPAsync().Result;
+            var ImagesUrl = $"{Ip}/{FilePaths.AvatarsPaths}";
+
             CreateMap<RegisterUserDTO, User>();
 
             CreateMap<User, UserDTO>()
@@ -21,8 +22,6 @@ namespace ForumAPI
                     opt.PreCondition(e => e.ProfilePicture != null);
                     opt.MapFrom(e => ImagesUrl + e.ProfilePicture);
                 });
-            //        .ForMember(opt => opt.Id, opt => opt.MapFrom(e => e.Id))
-            //        .ForMember(opt => opt.UserName, opt => opt.MapFrom(e => e.UserName))
 
             CreateMap<FileMetadata, FileMetadataDTOBase>()
                 .ForMember(opt => opt.FullName, opt => opt.MapFrom(e => $"{e.Name}{e.Extension}"));

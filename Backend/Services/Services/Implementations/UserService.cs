@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using dotenv.net;
+using Services.Utils;
 
 namespace Services.Services.Implementations
 {
@@ -136,7 +137,6 @@ namespace Services.Services.Implementations
         {
             var user = await _userRepository.GetUserByIdAsync(id);
             var mappedUser = _mapper.Map<UserDTO>(user);
-    //        mappedUser.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
             return mappedUser;
         }
 

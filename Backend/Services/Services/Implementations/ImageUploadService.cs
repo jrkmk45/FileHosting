@@ -17,8 +17,7 @@ namespace Services.Services.Implementations
                 throw new UnsupportedFileExtensionException($"{extension} is unsupported file extension, upload {string.Join(", ", SupportedTypes)}");
 
             string filename = Guid.NewGuid().ToString();
-                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot//images//{path}/", filename);
-         //   string uploadPath = Path.Combine($"wwwroot//images//{path}/", filename);
+            string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot//images//avatars//", filename);
 
             var image = await CropImageAsync(file);
 
@@ -27,20 +26,17 @@ namespace Services.Services.Implementations
                 image.Save(fileStream, new JpegEncoder());
                 fileStream.Flush();
             }
-
+            image.Dispose();
             return path + filename + extension;
         }
 
         private async Task<Image> CropImageAsync(IFormFile file)
         {
-            using (var image = await Image.LoadAsync(file.OpenReadStream()))
-            {
-                var size = Math.Min(image.Width, image.Height);
-                var cropRectangle = new Rectangle((image.Width - size) / 2, (image.Height - size) / 2, size, size);
-                image.Mutate(x => x.Crop(cropRectangle));
-                return image;
-            }
-
+            var image = await Image.LoadAsync(file.OpenReadStream());
+            var size = Math.Min(image.Width, image.Height);
+            var cropRectangle = new Rectangle((image.Width - size) / 2, (image.Height - size) / 2, size, size);
+            image.Mutate(x => x.Crop(cropRectangle));
+            return image;
         }
     }
 }
