@@ -27,10 +27,13 @@ jobs:
       run: dotnet publish -c Release /actions-runner/_work/FileStorage/FileStorage/Backend/
 
     - name: create .env
+      env:
+        DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        JWT_KEY: ${{ secrets.JWT_KEY }}
       run: |
-        touch .env
-        echo DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }} >> .env
-        echo JWT_KEY=${{ secrets.JWT_KEY }} >> .env
+        touch "/actions-runner/_work/FileStorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish/.env"
+        echo DB_CONNECTION_STRING=$DB_CONNECTION_STRING >> "/actions-runner/_work/FileStorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish/.env"
+        echo JWT_KEY=$JWT_KEY >> "/actions-runner/_work/FileStorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish/.env"
       
     - name: Run
       working-directory: "/actions-runner/_work/FileStorage/FileStorage/Backend/FileStorageAPI/bin/Release/net6.0/publish"
