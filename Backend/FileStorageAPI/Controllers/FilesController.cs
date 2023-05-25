@@ -1,4 +1,6 @@
-﻿using Domain.Exceptions;
+﻿
+using Domain.Exceptions;
+using Domain.Models;
 using dotenv.net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -118,12 +120,11 @@ namespace ForumAPI.Controllers
                 var signingKey = enviroment["JWT_KEY"];
                 var principal = DownloadTokenManager.ValidateToken(token, signingKey);
 
-                var userId = int.Parse(principal.FindFirst("userId")?.Value);
                 var fileId = principal.FindFirst("fileId")?.Value!;
 
                 FileMetadataDTOBase fileMetadata;
                 Stream fileStream;
-                if (userId != null)
+                if (int.TryParse(principal.FindFirst("userId")?.Value!, out var userId))
                 {
                     fileMetadata = await _fileService.GetFileAsync(fileId, userId);
                     fileStream = await _fileService.GetFileStreamAsync(fileId, userId);
