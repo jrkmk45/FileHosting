@@ -49,16 +49,6 @@ export class FilesService {
       downloadLink.click();
       window.URL.revokeObjectURL(url);
     });
-    // (url: string) => {
-    //   let downloadLink = document.createElement('a');
-    //   downloadLink.href = url;
-    //   downloadLink.click();
-    //   window.URL.revokeObjectURL(url);
-    // }
-    // let url = `${API_URL}files/${fileId}/download`;
-
-
-
   } 
 
   getFileMetadata(fileId: string) : Observable<IFile> {
