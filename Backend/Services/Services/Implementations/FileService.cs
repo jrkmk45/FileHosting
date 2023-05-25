@@ -249,7 +249,7 @@ namespace Services.Services.Implementations
             if (file.Accessability != FileAccessabilities.Private)
             {
                 var downloadToken = DownloadTokenManager.GenerateFileDownloadingToken(userId, fileId, tokenExpirationDate);
-                return $"https://{await IPGetter.GetPublicIPAsync()}/api/files/download?token={downloadToken}";
+                return $"http://{await IPGetter.GetPublicIPAsync()}/api/files/download?token={downloadToken}";
             }
             
             if (userId == null)
@@ -259,7 +259,7 @@ namespace Services.Services.Implementations
                 throw new ForbiddenResourceException($"No permission to download tihd file");
 
             var token = DownloadTokenManager.GenerateFileDownloadingToken(userId, fileId, tokenExpirationDate);
-            return $"https://{await IPGetter.GetPublicIPAsync()}/api/files/download?token={token}";
+            return $"http://{await IPGetter.GetPublicIPAsync()}/api/files/download?token={token}";
         }
 
         public static class MultipartRequestHelper
