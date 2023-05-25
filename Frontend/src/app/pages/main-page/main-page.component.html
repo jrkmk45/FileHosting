@@ -9,7 +9,7 @@
           <mat-form-field subscriptSizing="dynamic" class="w-full">
             <mat-label>Доступ</mat-label>
             <mat-select [(value)]="accessFilter" (selectionChange)="onAccessFilterChange($event)">
-              <mat-option [value]="-1">
+              <mat-option [value]="null">
                 Усі
               </mat-option>
               <mat-option [value]="0">

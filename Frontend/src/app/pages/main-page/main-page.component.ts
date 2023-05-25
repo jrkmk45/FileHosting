@@ -32,7 +32,7 @@ export class MainPageComponent implements OnInit {
   }
 
   onAccessFilterChange(event: MatSelectChange) {
-    if (event.value == -1) {
+    if (!event.value) {
       this.getUserFiles(this.userId!);
       return;
     }
