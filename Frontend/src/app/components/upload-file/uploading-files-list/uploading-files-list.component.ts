@@ -8,7 +8,6 @@ import { FormatStringHelper } from 'src/app/utils/format-string-helper';
   styleUrls: ['./uploading-files-list.component.css']
 })
 export class UploadingFilesListComponent implements OnInit {
-  @Input() isPending? : boolean;
   @Input() uploadingFiles?: IUploadingFile[];
 
   constructor(public formatHelper: FormatStringHelper) {}

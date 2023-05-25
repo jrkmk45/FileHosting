@@ -1,0 +1,16 @@
+<mat-card class="main-container">
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-1">
+      <div class="text-xl">
+        {{this.userService.user?.profilePicture}}
+      </div>
+      <div>
+        <app-user-avatar [avatarLink]="this.userService.user?.profilePicture"></app-user-avatar>
+      </div>
+      Змінити аватар
+      <button (click)="onOpenImageSelecting()" mat-raised-button color="primary">Обрати</button>
+      <input #fileInput class="hidden" type="file" accept="image/*" (change)="onImageSelect($event)" />
+    </div>
+    <button (click)="onUploadSubmit()" mat-raised-button color="primary">Застосувати</button>
+  </div>
+</mat-card>

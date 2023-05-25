@@ -51,7 +51,7 @@ export class RegisterComponent {
       this.authService.register(this.registerForm.value).subscribe({
         next: () => {
           this.router.navigate(['login']);
-          this.snackbarService.showMessage("Successfully registered in!");
+          this.snackbarService.showMessage("Успішна реєстрація!");
         },
         error: (response) => {
           console.error('Error:', response);

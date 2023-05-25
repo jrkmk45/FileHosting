@@ -1,13 +1,37 @@
 <div class="mt-5"></div>
 <div class="flex flex-col">
-
-<app-upload-file (fileUploaded)="onFileUploaded($event)"></app-upload-file>
-<div *ngIf="isLoading">Завантаження...</div>
-<div class="mt-3">
-<div class="mb-1"><app-search-bar (filesStateChanged)="onSearchPerformed($event)"></app-search-bar></div>
-<app-control-bar 
-  (filesDeleted)="onFilesDeleted($event)"
-  [files]="files">
-</app-control-bar>
-
-<app-file-list [files]="files"></app-file-list>
+  <app-upload-file (fileUploaded)="onFileUploaded($event)"></app-upload-file>
+  <div *ngIf="isLoading">Завантаження...</div>
+  <mat-card class="mt-3">
+    <div class="flex mb-2">
+      <div class="flex w-full">
+        <div>
+          <mat-form-field subscriptSizing="dynamic" class="w-full">
+            <mat-label>Доступ</mat-label>
+            <mat-select [(value)]="accessFilter" (selectionChange)="onAccessFilterChange($event)">
+              <mat-option [value]="-1">
+                Усі
+              </mat-option>
+              <mat-option [value]="0">
+                Публічні
+              </mat-option>
+              <mat-option [value]="1">
+                По посиланню
+              </mat-option>
+              <mat-option [value]="2">
+                Приватні
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="flex w-full">
+          <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Пошук</mat-label>
+            <input [(ngModel)]="searchTerm" (ngModelChange)="onSearchInputChange($event)" matInput>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div class="mb-1"><app-control-bar (filesDeleted)="onFilesDeleted($event)" [files]="files"></app-control-bar></div>
+    <app-file-list [files]="files"></app-file-list>
+  </mat-card>

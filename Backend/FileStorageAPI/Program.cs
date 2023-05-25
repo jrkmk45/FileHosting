@@ -85,7 +85,6 @@ builder.Services.AddAuthentication(auth =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(enviroment["JWT_KEY"])),
     };
 });
-Console.WriteLine(Environment.GetEnvironmentVariable("JWT_KEY"));
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FileStorageAPI", Version = "v1" });
@@ -121,12 +120,6 @@ app.UseCors();
 
 app.UseStaticFiles();
 
-/*
-var rolesService = app.Services.CreateScope().ServiceProvider.GetRequiredService<IRoleService>();
-
-await rolesService.CreateInitialRoles();
-await rolesService.CreateInitialAdminUser();
-*/
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 {

@@ -1,5 +1,7 @@
 export interface IUploadingFile {
-  progress?: number
-  isPrivate?: boolean
-  file: File
+  progress?: number;
+  loadedBytes?: number;
+  totalLoadrequirement?: number;
+  isPrivate?: boolean;
+  file: File;
 }

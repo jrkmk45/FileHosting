@@ -1,14 +1,34 @@
+<ng-template #leftItems>
+  <div class="left-items-container gap-3">
+    <div class="text-xl"><a routerLink="files/public">Публічні файли</a></div>
+    <div class="text-xl"><a routerLink="">Завантажити</a></div>
+  </div>
+</ng-template>
+
 <header>
   <nav class="flex navbar justify-center items-center">
     <div class="flex container items-center justify-between">
-      <div class="flex items-center justify-center gap-3">
-        <div><a href="#"><mat-icon class="logo-icon">cloud_queue</mat-icon></a></div>
-        <div><a href="#"><img class="logo-text" src="assets/logo.svg"></a></div>
-        <div class="text-xl"><a routerLink="files/public">Публічні файли</a></div>
-        <div class="text-xl ml-3"><a routerLink="">Завантажити</a></div>
-      </div>
+        <div class="flex gap-2">
+          <div *ngIf="showHamburger" class="hamburger-menu">
+            <ng-container *ngTemplateOutlet="leftItems"></ng-container>
+          </div>
+          <div class="flex items-center gap-2">
+            <div 
+              (click)="showHamburger = !showHamburger"
+              class="menu-icon">
+                <mat-icon>menu</mat-icon>
+            </div>
+            <div><a href="#"><mat-icon class="logo-icon">cloud_queue</mat-icon></a></div>
+            <div><a href="#"><img class="logo-text" src="assets/logo.svg"></a></div>
+
+            <div class="row-menu">
+              <ng-container *ngTemplateOutlet="leftItems"></ng-container>
+            </div>
+          </div>
+
+        </div>
       <div class="flex items-center gap-1">
-        <div class="navbar-item" *ngIf="isLoggedIn"><a href="#"><app-user-info-block [user]="userService.user"></app-user-info-block></a></div>
+        <div class="navbar-item" *ngIf="isLoggedIn"><a routerLink="/me"><app-user-info-block [user]="userService.user"></app-user-info-block></a></div>
         <div class="navbar-item" *ngIf="isLoggedIn"><a mat-stroked-button (click)="logout()" href="#">Вихід</a></div>
         <div class="navbar-item" *ngIf="!isLoggedIn"><a mat-stroked-button routerLink="login">Логін</a></div>
         <div class="navbar-item" *ngIf="!isLoggedIn"><a mat-stroked-button routerLink="register">Реєстрація</a></div>

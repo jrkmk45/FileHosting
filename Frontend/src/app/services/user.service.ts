@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, tap } from 'rxjs';
 import { API_URL } from '../constants';
 import { HttpClient } from '@angular/common/http';
-import { IUser } from '../models/user';
+import { IUser } from '../models/users';
 import jwt_decode from "jwt-decode";
 
 @Injectable({
@@ -12,7 +12,7 @@ export class UserService {
 
   public userUpdated = new Subject();
 
-  private _user! : IUser;
+  private _user? : IUser;
 
   get user() {
     return this._user;
@@ -26,17 +26,12 @@ export class UserService {
     )
   }
 
-  updateUser(user : any) {
-    return this.http.put(API_URL + 'users/me', user).pipe(
-      tap(response => {
-        this.userUpdated.next(user);
-      })
-    );
+  updateUser(user : FormData) {
+    return this.http.put(API_URL + 'users/me', user);
   }
 
 
-
-  public getUserTokenData() {
+  getUserTokenData() {
     if (localStorage.getItem("token") == null) {
       return null;
     }
@@ -49,6 +44,22 @@ export class UserService {
       id: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
     };
     return userData;
+  }
+
+  getUsers() : Observable<IUser[]> {
+    return this.http.get<IUser[]>(API_URL + 'users');
+  }
+
+  searchUsers(userName: string) : Observable<IUser[]> {
+    return this.http.get<IUser[]>(API_URL + `users?searchTerm=${userName}`);
+  }
+
+  getNotPermittedUsersByFile(fileId: string) : Observable<IUser[]> {
+    return this.http.get<IUser[]>(`${API_URL}files/${fileId}/users/non-permitted`);
+  }
+
+  getUserById(userId: number) : Observable<IUser> {
+    return this.http.get<IUser>(`${API_URL}users/${userId}`);
   }
 }
 

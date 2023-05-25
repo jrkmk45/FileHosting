@@ -34,7 +34,7 @@
   }
 }
 
-@media only screen and (max-width: 350px) {
+@media only screen and (max-width: 385px) {
   .file-card {
     width: calc(calc(100% - 2%)/2);
   }

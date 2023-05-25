@@ -26,4 +26,10 @@
     </div>
   </div>
   
-  <input class="hidden" type="file" id="file-input" (change)="onFileSelect($event)" multiple/>
+  <input 
+    #fileInput 
+    class="hidden" 
+    type="file" 
+    id="file-input" 
+    (change)="onFileSelect($event)" 
+    multiple/>

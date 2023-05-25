@@ -31,6 +31,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PublicFilesPageComponent } from './pages/public-files-page/public-files-page.component';
 import { ControlBarComponent } from './components/control-bar/control-bar.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { UserAvatarComponent } from './components/user-avatar/user-avatar.component';
+import { UserSettingsPageComponent } from './pages/user-settings-page/user-settings-page.component';
+import { MatRadioModule } from '@angular/material/radio';
+import { PrivateFileErrorPageComponent } from './pages/private-file-error-page/private-file-error-page.component';
+import { MatSelectModule } from '@angular/material/select';
+import { UserFilesPageComponent } from './pages/user-files-page/user-files-page.component';
+import { UsersAccessRemoveComponent } from './components/users-access-remove/users-access-remove.component';
+import { UsersAccessGrantComponent } from './components/users-access-grant/users-access-grant.component';
 
 
 @NgModule({
@@ -52,6 +60,12 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
     PublicFilesPageComponent,
     ControlBarComponent,
     SearchBarComponent,
+    UserAvatarComponent,
+    UserSettingsPageComponent,
+    PrivateFileErrorPageComponent,
+    UserFilesPageComponent,
+    UsersAccessRemoveComponent,
+    UsersAccessGrantComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +83,8 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
     MatCheckboxModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSelectModule
   ],
   providers: [ 
     {

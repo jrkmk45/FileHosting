@@ -28,5 +28,26 @@ namespace Repository.Repositories.Implementations
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<User>> SearchUsersByUserNameAsync(string userName)
+        {
+            return await _context.Users.Where(u => u.UserName.ToLower().Contains(userName.ToLower())).ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetNonAccessedUsersByFileAsync(string fileId, int ownerId, string? searchTerm = null)
+        {
+            var file = await _context.Files.FindAsync(fileId);
+            var users = _context.Users.Where(u => !u.AccessedFiles.Contains(file) && u.Id != ownerId);
+
+            if (searchTerm != null)
+                users = users.Where(u => u.UserName.ToLower().Contains(searchTerm.ToLower()));
+
+            return await users.ToListAsync();
+        }
     }
 }

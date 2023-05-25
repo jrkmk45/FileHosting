@@ -8,5 +8,8 @@ namespace Services.Services.Interfaces
         Task<UserManagerResponseDTO> LoginUserAsync(LoginUserDTO model);
         Task<UserDTO> GetUserByIdAsync(int id);
         Task UpdateUserAsync(int id, UpdateUserDTO user);
+        Task<IEnumerable<UserDTO>> SearchUsersByUserNameAsync(string userName);
+        Task<IEnumerable<UserDTO>> GetUsersAsync();
+        Task<IEnumerable<UserDTO>> GetNonAccessedUsersByFile(string fileId, string? searchTerm, int userId);
     }
 }

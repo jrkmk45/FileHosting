@@ -1,10 +1,10 @@
 <div>
   <div class="flex">
-    <div>
-      <div *ngIf="user?.profilePicture==null" class="default-user-image-container">
-        <mat-icon class="default-user-image">person</mat-icon>
-      </div>
-      <div *ngIf="user?.profilePicture!=null"><img class="user-image" src={{user?.profilePicture}}></div>
+    <div class="avatar-container">
+      <app-user-avatar 
+        [rounded]="true"
+        [avatarLink]="user?.profilePicture">
+      </app-user-avatar>
     </div>
     <div *ngIf="showAvatar" class="flex flex-col mt-0.5 ml-1">
       <div class="user-name">{{user?.userName}}</div>

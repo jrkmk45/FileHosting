@@ -1,0 +1,10 @@
+<div class="flex w-full">
+  <div class="flex flex-col gap-1.5">
+    <div *ngFor="let user of users; let i = index" class="w-full">
+      <div class="flex justify-between">
+        <app-user-info-block [user]="user"></app-user-info-block>
+        <a><mat-icon (click)="onDepermitClick(user)">clear</mat-icon></a>
+      </div>
+    </div>
+  </div>
+</div>

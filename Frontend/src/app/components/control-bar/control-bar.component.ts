@@ -36,7 +36,7 @@ export class ControlBarComponent {
         this.filesDeleted.emit(checkedFiles);
       },
       error: () => {
-        this.snackbar.showMessage("Error occured while deleting");
+        this.snackbar.showMessage("Виникла помилка при видаленні!");
       }
     });
   }

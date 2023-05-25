@@ -31,7 +31,6 @@
     <Folder Include="UserDirectories\0\" />
     <Folder Include="UserDirectories\3\" />
     <Folder Include="UserDirectories\4\" />
-    <Folder Include="wwwroot\images\avatars\" />
   </ItemGroup>
 
 </Project>

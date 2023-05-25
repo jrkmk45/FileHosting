@@ -1,0 +1,14 @@
+<div>
+  <div *ngIf="avatarLink == null" class="user-image">
+    <img 
+      [class.border]="rounded"
+      class="user-image" 
+      src="./assets/images/default-user-avatar.png">
+  </div>
+  <div *ngIf="avatarLink != null">
+    <img 
+      [class.border]="rounded"
+      class="user-image" 
+      src="{{avatarLink}}">
+  </div>
+</div>

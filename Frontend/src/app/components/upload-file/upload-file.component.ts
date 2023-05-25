@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FilesService } from 'src/app/services/files.service';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 import { IFile } from 'src/app/models/file';
@@ -11,6 +11,7 @@ import { IUploadingFile } from 'src/app/models/uploading-file';
   styleUrls: ['./upload-file.component.css']
 })
 export class UploadFileComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   isLoading = false;
   selectedFiles: IUploadingFile[] = [];
@@ -22,8 +23,9 @@ export class UploadFileComponent {
 
   onFileSelect(event : Event): void {
     let files: FileList = (event.target as HTMLInputElement).files!;
+
     for (let i = 0; i < files.length; i++) {
-      const file = files.item(i);
+      let file = files.item(i);
       if (file) {
         this.selectedFiles.unshift({ file: file });
         let reader = new FileReader();
@@ -34,10 +36,11 @@ export class UploadFileComponent {
         reader.readAsText(file);
       }
     }
+    this.fileInput.nativeElement.value = '';
   }
 
   onBrowseFilesClick() {
-    document.getElementById('file-input')?.click();
+    this.fileInput.nativeElement.click();
   }
 
   onFilesDrop(event: DragEvent) {
@@ -66,6 +69,8 @@ export class UploadFileComponent {
           if (response != null) {
             if (response.progress != 'finished') {
               selectedFile.progress = response.progress;
+              selectedFile.loadedBytes = response.loadedBytes;
+              selectedFile.totalLoadrequirement = response.totalLoadrequirement;
             }
             else {
               selectedFile.file = response.result;
@@ -78,7 +83,6 @@ export class UploadFileComponent {
         }
       })
       formData.delete('file');
-      console.log("qwe");
     }
   }
 

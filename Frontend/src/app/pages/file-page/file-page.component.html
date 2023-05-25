@@ -1,2 +1,57 @@
-<h1>Файл: {{file!.fullName}}</h1>
-<div class="icon-container"><app-file-icon [extension]="file!.extension"></app-file-icon></div>
+<div class="main-container">
+  <mat-card class="inner-container p-5 mt-6 m-auto">
+    <mat-spinner class="m-auto mt-5" *ngIf="isLoading"></mat-spinner>
+    <div *ngIf="!isLoading">
+      <h1>Файл: {{file?.fullName}}</h1>
+
+      <div class="file-info-container">
+        <div class="icon-container">
+          <app-file-icon class="icon" [extension]="file?.extension"></app-file-icon>
+        </div>
+        <div class="flex flex-col gap-1">
+          <div class="text-lg">Власник: </div>
+          <a [routerLink]="['../../users', file!.owner!.id]"><app-user-info-block [user]="file?.owner"></app-user-info-block></a>
+          <div class="text-lg">
+            Створено: {{file?.createdDate | date:'dd.MM.yyyy HH:mm'}}
+          </div>
+          <div class="text-lg">
+            Розмір: {{formatHelper.convertBytesToString(file!.size)}}
+          </div>
+          <div *ngIf="file?.accessability!=null" class="flex gap-1">
+            <div class="text-lg">Доступ:</div>
+            <div class="text-lg" *ngIf="file?.accessability==0">Публічний</div>
+            <div class="text-lg" *ngIf="file?.accessability==1">По посиланню</div>
+            <div class="text-lg" *ngIf="file?.accessability==2">Приватний</div>
+          </div>
+          <button (click)="onDownloadClick()" mat-raised-button color="primary">Завантажити</button>
+        </div>
+        <div *ngIf="file?.owner?.id == this.userService.user?.id" class="text-lg">
+          Доступ
+          <mat-radio-group [(ngModel)]="selectedAccess" aria-label="Змінити доступ" class="flex flex-col">
+
+            <mat-radio-button [value]="0">Публічний</mat-radio-button>
+            <mat-radio-button [value]="1">По посиланню</mat-radio-button>
+            <mat-radio-button [value]="2">Приватний</mat-radio-button>
+
+          </mat-radio-group>
+
+          <button (click)="onChangeAccessabilityClick()" mat-raised-button color="primary">Застосувати</button>
+        </div>
+
+
+      </div>
+      <div *ngIf="file?.accessability == 2" class="flex gap-4 mt-2">
+        <div *ngIf="notPermittedUsers?.length" class="flex flex-col">
+          <p class="text-xl text-green-900">Надати доступ</p>
+          <app-users-access-grant (userPermitted)="onUserPermitted($event)"
+            [users]="notPermittedUsers"></app-users-access-grant>
+        </div>
+        <div *ngIf="file?.permittedUsers?.length" class="flex flex-col">
+          <p class="text-xl text-red-700">Забрати доступ</p>
+          <app-users-access-remove (userDepermitted)="onUserDepermitted($event)"
+            [users]="file?.permittedUsers"></app-users-access-remove>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

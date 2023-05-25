@@ -9,6 +9,7 @@ namespace Services.Utils
 
         public static async Task<string> GetPublicIPAsync()
         {
+            //return "https://localhost:7153";
             if (string.IsNullOrEmpty(Ip))
             {
                 Ip = await GetIpAsync();

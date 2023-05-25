@@ -1,11 +1,14 @@
 ﻿using Domain.Exceptions;
-using Domain.Models;
+using dotenv.net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Services.Dtos.FileMetadata;
+using Services.Dtos.User;
 using Services.Services.Interfaces;
+using Services.Utils;
 using System.Security.Claims;
 
 namespace ForumAPI.Controllers
@@ -16,9 +19,11 @@ namespace ForumAPI.Controllers
     public class FilesController : ControllerBase
     {
         private readonly IFileService _fileService;
-        public FilesController(IFileService fileService) 
-        { 
+        private readonly IUserService _userService;
+        public FilesController(IFileService fileService, IUserService userService)
+        {
             _fileService = fileService;
+            _userService = userService;
         }
 
         [HttpGet("search")]
@@ -35,7 +40,7 @@ namespace ForumAPI.Controllers
         public async Task<ActionResult<IEnumerable<FileMetadataDTOBase>>> GetFiles()
         {
             if (!User.Identity.IsAuthenticated)
-                return Ok(await _fileService.GetFilesAsync(null));
+                return Ok(await _fileService.GetFilesAsync());
 
             var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
             return Ok(await _fileService.GetFilesAsync(requesterId));
@@ -61,10 +66,10 @@ namespace ForumAPI.Controllers
             try
             {
                 if (!User.Identity.IsAuthenticated)
-                    return Ok(await _fileService.GetFileMetadataAsync(fileId));
+                    return Ok(await _fileService.GetFileAsync(fileId));
 
                 var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Ok(await _fileService.GetFileMetadataAsync(fileId, requesterId));
+                return Ok(await _fileService.GetFileAsync(fileId, requesterId));
             }
             catch (ForbiddenResourceException ex)
             {
@@ -79,30 +84,62 @@ namespace ForumAPI.Controllers
                 return NotFound(ex.Message);
             }
         }
-        
-        [HttpGet("{fileId}/download")]
-        public async Task<IActionResult> DownloadFile(string fileId)
+
+        [HttpGet("{fileId}/download-link")]
+        public async Task<ActionResult<string>> GetFileDownloadLink(string fileId)
         {
             try
             {
-                Stream fileStream;
-                if (!User.Identity.IsAuthenticated)
+                if (User.Identity.IsAuthenticated)
                 {
-                    fileStream = await _fileService.GetFileStreamAsync(fileId);
+                    var userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                    return Ok(await _fileService.GetFileDownloadLinkAsync(fileId, userId));
                 }
-                else
-                {
-                    var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                    fileStream = await _fileService.GetFileStreamAsync(fileId, requesterId);
-                }
-
-                var fileMetadata = await _fileService.GetFileMetadataAsync(fileId);
-                return File(fileStream, "application/octet-stream", fileMetadata.FullName);
-            } catch (ForbiddenResourceException)
+                return Ok(await _fileService.GetFileDownloadLinkAsync(fileId, null));
+            }
+            catch (ForbiddenResourceException)
             {
                 return Forbid();
             }
+            catch (UnauthorizedException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
 
+        }
+
+
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadFile(string? token)
+        {
+            try
+            {
+                var enviroment = DotEnv.Read();
+                var signingKey = enviroment["JWT_KEY"];
+                var principal = DownloadTokenManager.ValidateToken(token, signingKey);
+
+                var userId = int.Parse(principal.FindFirst("userId")?.Value);
+                var fileId = principal.FindFirst("fileId")?.Value!;
+
+                FileMetadataDTOBase fileMetadata;
+                Stream fileStream;
+                if (userId != null)
+                {
+                    fileMetadata = await _fileService.GetFileAsync(fileId, userId);
+                    fileStream = await _fileService.GetFileStreamAsync(fileId, userId);
+                }
+                else
+                {
+                    fileMetadata = await _fileService.GetFileAsync(fileId);
+                    fileStream = await _fileService.GetFileStreamAsync(fileId);
+                }
+                return File(fileStream, "application/octet-stream", fileMetadata.FullName);
+
+            }
+            catch (SecurityTokenValidationException)
+            {
+                return Unauthorized();
+            } 
         }
 
         [HttpPost, Authorize]
@@ -127,11 +164,41 @@ namespace ForumAPI.Controllers
             return Created(nameof(FilesController), fileMetadata);
            
         }
-        
+
+        [HttpPatch("{fileId}"), Authorize]
+        public async Task<ActionResult> UpdateFile(string fileId, [FromBody]UpdateFileDTO updateFile)
+        {
+            try
+            {
+                var userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                await _fileService.UpdateFileAsync(fileId, updateFile, userId);
+                return NoContent();
+            } catch (ForbiddenResourceException)
+            {
+                return Forbid();
+            }
+            catch (ResourceNotFoundException) 
+            {
+                return NotFound("No file with id" + fileId);
+            }
+        }
+
+        [HttpGet("{fileId}/users/non-permitted"), Authorize]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAccessedUsersByFile(string fileId, string? search)
+        {
+            try
+            {
+                var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                return Ok(await _userService.GetNonAccessedUsersByFile(fileId, search, requesterId));
+            }
+            catch (ForbiddenResourceException)
+            {
+                return Forbid();
+            }
+        }
+
         public static class MultipartRequestHelper
         {
-            // Content-Type: multipart/form-data; boundary="----WebKitFormBoundarymx2fSWqWSd0OxQqq"
-            // The spec at https://tools.ietf.org/html/rfc2046#section-5.1 states that 70 characters is a reasonable limit.
             public static string GetBoundary(MediaTypeHeaderValue contentType, int lengthLimit)
             {
                 var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
@@ -155,7 +222,6 @@ namespace ForumAPI.Controllers
                 return !string.IsNullOrEmpty(contentType)
                        && contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
             }
-
         }
         
     }

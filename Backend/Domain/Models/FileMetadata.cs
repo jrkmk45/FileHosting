@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Constants;
+using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
 {
@@ -16,7 +18,7 @@ namespace Domain.Models
         public int UserId { get; set; }
         public User User { get; set; }
 
-        public bool isPrivate { get; set; }
+        public FileAccessabilities Accessability { get; set; }
         public List<User> PermittedUsers { get; set; }
     }
 }

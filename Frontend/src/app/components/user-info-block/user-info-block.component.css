@@ -1,24 +1,10 @@
-.user-image {
+.avatar-container {
   height: 45px;
   width: 45px;
   border-radius: 1000px;
+  border: 1.5px solid rgb(66, 66, 66);
 }
 
 .user-name {
   font-size: 16px;
-}
-
-.default-user-image-container {
-  height: 45px;
-  width: 45px;
-  border-radius: 1000px;
-  border: 1.5px solid black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.default-user-image {
-  margin-left: 0.3px;
-  transform: scale(1.3);
 }

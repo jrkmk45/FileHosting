@@ -1,8 +1,7 @@
-﻿using Domain.Exceptions;
-using Domain.Models;
+﻿using Domain.Enums;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Services.Dtos.FileMetadata;
 using Services.Dtos.User;
@@ -17,14 +16,11 @@ namespace ForumAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly UserManager<User> _userManager;
         private readonly IFileService _fileService;
         public UserController(IUserService userService,
-            UserManager<User> userManager,
             IFileService fileService)
         {
             _userService = userService;
-            _userManager = userManager;
             _fileService = fileService;
         }
 
@@ -79,24 +75,43 @@ namespace ForumAPI.Controllers
         }
 
         [HttpGet("{userId:int}/files")]
-        public async Task<ActionResult<IEnumerable<FileMetadataDTOBase>>> GetUserFilesMetadata(int userId)
+        public async Task<ActionResult<IEnumerable<FileMetadataDTOBase>>> GetUserFiles(int userId, FileAccessabilities? access, string? search)
         {
             try
             {
-                IEnumerable<FileMetadataDTOBase> userFilesMetadata;
                 if (!User.Identity.IsAuthenticated)
-                    userFilesMetadata = await _fileService.GetUserPublicFilesAsync(userId);
-                else
                 {
-                    var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                    userFilesMetadata = await _fileService.GetUserFilesAsync(userId, requesterId);
+                    if (access != null && access != FileAccessabilities.Public)
+                        return Unauthorized("User should be authorized to filter by this access");
+
+                    return Ok(await _fileService.GetUserPublicFilesAsync(userId));
                 }
-                return Ok(userFilesMetadata);
+
+                 var requesterId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                 return Ok(await _fileService.GetUserFilesAsync(userId, requesterId, access, search));
+                
             } catch (ResourceNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
         }
 
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<UserDTO>> GetUser(int userId)
+        {
+            return await _userService.GetUserByIdAsync(userId);
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? searchTerm)
+        {
+            if (searchTerm == null)
+                return Ok(await _userService.GetUsersAsync());
+
+            return Ok(await _userService.SearchUsersByUserNameAsync(searchTerm));
+        }
+        
+        
     }
 }

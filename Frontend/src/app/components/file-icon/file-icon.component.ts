@@ -10,7 +10,7 @@ export class FileIconComponent {
 
   filterValue?: string;
 
-  @Input() extension! : string;
+  @Input() extension? : string;
   @Input() showExtension = true;
   
   backgroundColorFilter? : string;

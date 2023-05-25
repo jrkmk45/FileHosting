@@ -6,3 +6,14 @@ mat-checkbox {
   margin: -10px;
   margin-left: -1px;
 }
+
+mat-icon {
+  cursor: pointer;
+}
+
+.size-container {
+  width: 58px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}

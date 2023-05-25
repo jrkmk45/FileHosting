@@ -1,11 +1,17 @@
-export interface IFile {
-  id: string
-  fullName: string
-  name: string
-  extension: string
-  size: number
-  createdDate: string
+import { IUser } from "./users";
 
-  checked?: boolean
-  uploadProgress? : number
+export interface IFile {
+  id: string;
+  fullName: string;
+  name: string;
+  extension: string;
+  size: number;
+  createdDate: Date;
+
+  owner?: IUser;
+  accessability? : number;
+  permittedUsers? : IUser[];
+
+  checked?: boolean;
+  uploadProgress? : number;
 }

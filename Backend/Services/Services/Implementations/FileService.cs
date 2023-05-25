@@ -9,7 +9,8 @@ using shortid.Configuration;
 using Services.Dtos.FileMetadata;
 using AutoMapper;
 using Domain.Exceptions;
-using System.IO;
+using Domain.Enums;
+using Services.Utils;
 
 namespace Services.Services.Implementations
 {
@@ -27,26 +28,29 @@ namespace Services.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<FileMetadataDTOBase> GetFileMetadataAsync(string fileId)
+        public async Task<FileMetadataDTOBase> GetFileAsync(string fileId)
         {
             var fileMetadata = await _fileMetedataRepository.GetFileAsync(fileId);
             if (fileMetadata == null)
                 throw new ResourceNotFoundException($"No file metadata with id: {fileId}");
 
-            if (fileMetadata.isPrivate)
+            if (fileMetadata.Accessability == FileAccessabilities.Private)
                 throw new UnauthorizedAccessException("Authorize to access this resource");
 
             return _mapper.Map<FileMetadataDTOBase>(fileMetadata);
         }
 
-        public async Task<FileMetadataDTOBase> GetFileMetadataAsync(string fileId, int requesterId)
+        public async Task<FileMetadataDTOBase> GetFileAsync(string fileId, int requesterId)
         {
             var fileMetadata = await _fileMetedataRepository.GetFileAsync(fileId);
 
             if (fileMetadata == null)
                 throw new ResourceNotFoundException($"No file metadata with id: {fileId}");
 
-            if (!fileMetadata.isPrivate || fileMetadata.UserId == requesterId)
+            if (fileMetadata.UserId == requesterId)
+                return _mapper.Map<FileFullDTO>(fileMetadata);
+
+            if (fileMetadata.Accessability != FileAccessabilities.Private)
                 return _mapper.Map<FileMetadataDTOBase>(fileMetadata);
 
             if (await _fileMetedataRepository.CheckPermission(requesterId, fileId))
@@ -59,8 +63,8 @@ namespace Services.Services.Implementations
         {
             var fileMetadata = await _fileMetedataRepository.GetFileAsync(fileId);
 
-            if (fileMetadata.isPrivate && fileMetadata.User.Id != requesterId
-                && await _fileMetedataRepository.CheckPermission(requesterId, fileId))
+            if (fileMetadata.Accessability == FileAccessabilities.Private && fileMetadata.User.Id != requesterId
+                && !await _fileMetedataRepository.CheckPermission(requesterId, fileId))
             {
                 throw new ForbiddenResourceException("No access to download this file!");
             }
@@ -72,7 +76,7 @@ namespace Services.Services.Implementations
         {
             var fileMetadata = await _fileMetedataRepository.GetFileAsync(fileId);
 
-            if (fileMetadata.isPrivate)
+            if (fileMetadata.Accessability == FileAccessabilities.Private)
                 throw new UnauthorizedException("No access to download this file!");
 
             return GetFileStream(fileMetadata);
@@ -91,7 +95,7 @@ namespace Services.Services.Implementations
             if (user == null)
                 throw new Exception($"No user with id: {userId}");
 
-            var filesMetadata = await _fileMetedataRepository.GetUserFilesMetadataAsync(userId);
+            var filesMetadata = await _fileMetedataRepository.GetUserFilesAsync(userId);
             return _mapper.Map<IEnumerable<FileMetadataDTOBase>>(filesMetadata);
         }
 
@@ -130,7 +134,7 @@ namespace Services.Services.Implementations
                         {
                             await section.Body.CopyToAsync(targetStream);
                         }
-
+                        
                         var fileName = System.Net.WebUtility.HtmlEncode(contentDisposition.FileName.Value);
 
                         var idGenerationOptions = new GenerationOptions(length: 9);
@@ -145,9 +149,9 @@ namespace Services.Services.Implementations
                             Size = section.Body.Length,
                             UserId = userId,
                             CreatedDate = DateTime.Now,
-                            isPrivate = isPrivate
+                            Accessability = isPrivate ? FileAccessabilities.Private : FileAccessabilities.Public,
                         };
-                        await _fileMetedataRepository.AddFileMetadataAsync(fileMetadata);
+                        await _fileMetedataRepository.AddFile(fileMetadata);
                     }
                 }
 
@@ -160,7 +164,8 @@ namespace Services.Services.Implementations
             return null;
         }
 
-        public async Task<IEnumerable<FileMetadataDTOBase>> GetUserFilesAsync(int userId, int requesterId)
+        public async Task<IEnumerable<FileMetadataDTOBase>> GetUserFilesAsync(int userId, int requesterId, 
+            FileAccessabilities? accessability = null, string? search = null)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
 
@@ -168,7 +173,7 @@ namespace Services.Services.Implementations
                 throw new Exception($"No user with id: {userId}");
 
 
-            var filesMetadata = await _fileMetedataRepository.GetUserFilesMetadataAsync(userId, requesterId);
+            var filesMetadata = await _fileMetedataRepository.GetUserFilesAsync(userId, requesterId, accessability, search);
             return _mapper.Map<IEnumerable<FileMetadataDTOBase>>(filesMetadata);
         }
 
@@ -185,7 +190,7 @@ namespace Services.Services.Implementations
             return _mapper.Map<IEnumerable<FileMetadataDTOBase>>(files);
         }
 
-        public async Task<IEnumerable<FileMetadataDTOBase>> GetFilesAsync(int? userId)
+        public async Task<IEnumerable<FileMetadataDTOBase>> GetFilesAsync(int? userId = null)
         {
             var files = await _fileMetedataRepository.GetFilesAsync(userId);
             return _mapper.Map<IEnumerable<FileMetadataDTOBase>>(files);
@@ -201,10 +206,30 @@ namespace Services.Services.Implementations
                     throw new ForbiddenResourceException("No permission!");
 
                 var filePath = GetFilePath(file);
-                var deletionTask = Task.Run(() => File.Delete(filePath));
+                Task.Run(() => File.Delete(filePath));
 
                 await _fileMetedataRepository.DeleteFileAsync(file);
             }
+        }
+
+        public async Task UpdateFileAsync(string id, UpdateFileDTO changedFile, int userId)
+        {
+            var file = await _fileMetedataRepository.GetFileAsync(id);
+
+            if (file == null)
+                throw new ResourceNotFoundException("No file with id" + id);
+
+            if (file.UserId != userId)
+                throw new ForbiddenResourceException($"{userId} is not owner of {id}");
+
+            _mapper.Map(changedFile, file);
+            
+            for (int i=0; i < file.PermittedUsers.Count; i++)
+            {
+                file.PermittedUsers[i] = await _userRepository.GetUserByIdAsync(file.PermittedUsers[i].Id);
+            }
+           
+            await _fileMetedataRepository.UpdateFileAsync(file);
         }
 
         private string GetFilePath(FileMetadata fileMetadata)
@@ -212,46 +237,35 @@ namespace Services.Services.Implementations
             return $"{FilePaths.UserDirectories}/{fileMetadata.UserId}/{fileMetadata.StorageName}";
         }
 
+        public Task<bool> IsPrivateFileAccessibleAsync(int userId, string fileId)
+        {
+            return _fileMetedataRepository.CheckPermission(userId, fileId);
+        }
+
+        public async Task<string> GetFileDownloadLinkAsync(string fileId, int? userId = null)
+        {
+            var file = await _fileMetedataRepository.GetFileAsync(fileId);
+            var tokenExpirationDate = DateTime.UtcNow.AddMinutes(3);
+            if (file.Accessability != FileAccessabilities.Private)
+            {
+                var downloadToken = DownloadTokenManager.GenerateFileDownloadingToken(userId, fileId, tokenExpirationDate);
+                return $"{await IPGetter.GetPublicIPAsync()}/api/files/download?token={downloadToken}";
+            }
+            
+            if (userId == null)
+                throw new UnauthorizedException("Downloading this file requires authorization");
+
+            if (!await _fileMetedataRepository.CheckPermission((int)userId, fileId))
+                throw new ForbiddenResourceException($"No permission to download tihd file");
+
+            var token = DownloadTokenManager.GenerateFileDownloadingToken(userId, fileId, tokenExpirationDate);
+            return $"{await IPGetter.GetPublicIPAsync()}/api/files/download?token={token}";
+        }
+
         public static class MultipartRequestHelper
         {
-            // Content-Type: multipart/form-data; boundary="----WebKitFormBoundarymx2fSWqWSd0OxQqq"
-            // The spec at https://tools.ietf.org/html/rfc2046#section-5.1 states that 70 characters is a reasonable limit.
-            public static string GetBoundary(MediaTypeHeaderValue contentType, int lengthLimit)
-            {
-                var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
-
-                if (string.IsNullOrWhiteSpace(boundary))
-                {
-                    throw new InvalidDataException("No content type: boundary");
-                }
-
-                if (boundary.Length > lengthLimit)
-                {
-                    throw new InvalidDataException(
-                        $"Multipart boundary length limit {lengthLimit} exceeded.");
-                }
-
-                return boundary;
-            }
-
-            public static bool IsMultipartContentType(string contentType)
-            {
-                return !string.IsNullOrEmpty(contentType) &&
-                    contentType.IndexOf("multipart/", StringComparison.OrdinalIgnoreCase) >= 0;
-            }
-
-            public static bool HasFormDataContentDisposition(ContentDispositionHeaderValue contentDisposition)
-            {
-                // Content-Disposition: form-data; name="key";
-                return contentDisposition != null &&
-                    contentDisposition.DispositionType.Equals("form-data") &&
-                    string.IsNullOrEmpty(contentDisposition.FileNameStar.Value) &&
-                    string.IsNullOrEmpty(contentDisposition.FileName.Value) ;
-            }
-
             public static bool HasFileContentDisposition(ContentDispositionHeaderValue contentDisposition)
             {
-                // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
                 return contentDisposition != null &&
                     contentDisposition.DispositionType.Equals("form-data") &&
                     (!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||

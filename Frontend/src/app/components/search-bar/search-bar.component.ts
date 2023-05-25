@@ -30,7 +30,7 @@ export class SearchBarComponent {
         this.filesStateChanged.emit(files);
       },
       error: () => {
-        this.snackbar.showMessage("Error occured while loading files");
+        this.snackbar.showMessage("Сталася помилка при отриманні файлів");
       }
     })
   }
@@ -41,7 +41,7 @@ export class SearchBarComponent {
         this.filesStateChanged.emit(files);
       },
       error: () => {
-        this.snackbar.showMessage("Error occured while loading files");
+        this.snackbar.showMessage("Сталася помилка при отриманні файлів");
       }
     })
   }

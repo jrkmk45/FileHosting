@@ -7,11 +7,11 @@
           userName?.touched &&
            userName?.hasError('required')"
         class="error-text text-base mb-1">
-        User name required
+        Обов'язкове поле
       </div>
 
       <mat-form-field appearance="outline">
-        <mat-label>User name</mat-label>
+        <mat-label>Логін</mat-label>
         <input matInput formControlName="userName">
       </mat-form-field>
 
@@ -21,11 +21,11 @@
            password?.touched &&
            (password?.hasError('required') 
            || password?.hasError('minlength'))">
-          There should be at least 5 characters
+          Тут має бути мінімум 5 символів
       </mat-error>
 
       <mat-form-field appearance="outline">
-        <mat-label>Password*</mat-label>
+        <mat-label>Пароль*</mat-label>
         <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
 
         <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
@@ -37,7 +37,7 @@
       <div class="flex">
         <button (click)="submitPressed = true" type="submit" class="w-20" mat-raised-button
           color="primary">Увійти</button>
-        <button mat-raised-button type="button" routerLink="/register" class="ml-3">Новий користувач?</button>
+        <button mat-raised-button type="button" routerLink="/register" class="ml-3">Реєстрація</button>
       </div>
       <div *ngIf="loginErrorMessage" class="error-text text-base mt-3">
         {{ loginErrorMessage }}!

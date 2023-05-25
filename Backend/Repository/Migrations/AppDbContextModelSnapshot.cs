@@ -27,6 +27,9 @@ namespace Repository.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<int>("Accessability")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -47,9 +50,6 @@ namespace Repository.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("isPrivate")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 

@@ -3,7 +3,6 @@ using Domain.Constants;
 using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Repositories.Interfaces;
 using Services.Dtos.User;
@@ -14,7 +13,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using dotenv.net;
-using Services.Utils;
 
 namespace Services.Services.Implementations
 {
@@ -24,18 +22,21 @@ namespace Services.Services.Implementations
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IImageUploadService _imageUploadService;
+        private readonly IFileMetadataRepository _fileMetadataRepository;
 
         private const string InvalidCredentialsMessage = "Невалідні дані для логіну";
         private const string UnableToCreateUserMessage = "Реєстрація неможлива";
         public UserService(UserManager<User> userManager,
             IMapper mapper,
             IUserRepository userRepository,
-            IImageUploadService imageUploadService)
+            IImageUploadService imageUploadService,
+            IFileMetadataRepository fileMetadataRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
             _userRepository = userRepository;
             _imageUploadService = imageUploadService;
+            _fileMetadataRepository = fileMetadataRepository;
         }
 
         public async Task<UserManagerResponseDTO> LoginUserAsync(LoginUserDTO model)
@@ -136,8 +137,7 @@ namespace Services.Services.Implementations
         public async Task<UserDTO> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);
-            var mappedUser = _mapper.Map<UserDTO>(user);
-            return mappedUser;
+            return _mapper.Map<UserDTO>(user);
         }
 
         public async Task UpdateUserAsync(int id, UpdateUserDTO updateUser)
@@ -153,5 +153,28 @@ namespace Services.Services.Implementations
             await _userRepository.UpdateUserAsync(user);
         }
 
+        public async Task<IEnumerable<UserDTO>> SearchUsersByUserNameAsync(string userName)
+        {
+            var users = await _userRepository.SearchUsersByUserNameAsync(userName);
+            return _mapper.Map<IEnumerable<UserDTO>>(users);
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        {
+            var users = await _userRepository.GetUsersAsync();
+            return _mapper.Map<IEnumerable<UserDTO>>(users);
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetNonAccessedUsersByFile(string fileId, string searchTerm, int userId)
+        {
+            var file = await _fileMetadataRepository.GetFileAsync(fileId);
+
+            if (file.UserId != userId)
+                throw new ForbiddenResourceException("User should be file owner");
+
+            var users = await _userRepository.GetNonAccessedUsersByFileAsync(fileId,  userId, searchTerm);
+            return _mapper.Map<IEnumerable<UserDTO>>(users);
+
+        }
     }
 }

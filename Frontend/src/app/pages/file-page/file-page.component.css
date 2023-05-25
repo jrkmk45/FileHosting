@@ -1,3 +1,26 @@
 .icon-container {
-  max-width: 205px;
+  width: 205px;
+  min-width: 150px;
+}
+
+.main-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.file-info-container {
+  display: flex;
+  gap: 15px;
+}
+
+.inner-container {
+  width: 100%;
+  display: flex;
+}
+
+
+@media screen and (max-width: 620px) {
+  .file-info-container {
+    flex-direction: column;
+  }
 }

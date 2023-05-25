@@ -8,6 +8,8 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+
+  public showHamburger = false;
   
   constructor(private authService: AuthService, 
     public userService: UserService) { }

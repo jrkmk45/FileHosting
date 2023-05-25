@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute, Route } from '@angular/router';
 import { IFile } from 'src/app/models/file';
 import { AuthService } from 'src/app/services/auth.service';
@@ -16,38 +17,47 @@ export class MainPageComponent implements OnInit {
   isLoading = true;
   files!: IFile[];
 
+  userId?: number;
+  searchTerm?: string;
+
+  accessFilter?: number;
+
   constructor(private userService: UserService,
     private filesService: FilesService,
-    private authService: AuthService,
-    private snackbar: SnackbarService,
-    private route: ActivatedRoute) {}
+    private snackbar: SnackbarService,) {}
 
   ngOnInit(): void {
-    let userId = this.route.snapshot.paramMap.get('id');
+    this.userId = this.userService.getUserTokenData()!.id;
+    this.getUserFiles(this.userId!);
+  }
 
-    if (userId == null) {
-      if (this.authService.isUserLoggedIn()) {
-        var userData = this.userService.getUserTokenData();
-      }
-      else {
-        this.isLoading = false;
-      }
+  onAccessFilterChange(event: MatSelectChange) {
+    if (event.value == -1) {
+      this.getUserFiles(this.userId!);
+      return;
     }
-
-
-    this.filesService.getUserFilesMetadata(userData!.id).subscribe({
-      next: (response) => {
-        this.files = response;
-        this.isLoading = false;
+    this.filesService.queryUserFiles(this.userId!, event.value).subscribe({
+      next: (files) => {
+        this.files = files;
       },
-      error: (error) => {
-        this.snackbar.showMessage(error.message);
+      error: () => {
+        this.snackbar.showMessage("Виникла помилка при завантаженні файлів");
+      }
+    });
+  }
+  
+  onSearchInputChange(event : any) {
+    this.filesService.queryUserFiles(this.userId!, this.accessFilter, event).subscribe({
+      next: (files) => {
+        this.files = files;
+      },
+      error: () => {
+        this.snackbar.showMessage("Виникла помилка при пошуку файлів");
       }
     });
   }
 
   onFileUploaded(event : IFile) {
-    console.log(event);
     this.files?.unshift(event);
   }
 
@@ -57,5 +67,17 @@ export class MainPageComponent implements OnInit {
 
   onSearchPerformed(event : IFile[]) {
     this.files = event;
+  }
+
+  getUserFiles(userId: number) {
+    this.filesService.getUserFilesMetadata(userId).subscribe({
+      next: (response) => {
+        this.files = response;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.snackbar.showMessage("Виникла помилка при завантаженні файлів");
+      }
+    });
   }
 }
